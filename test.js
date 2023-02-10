@@ -16,7 +16,7 @@ document.body.appendChild(app.view);
 app.renderer.background.color = 51515;
 
 // Create a bibite to draw
-let bibite = PIXI.Sprite.from('bibite.png');
+let bibite = PIXI.Sprite.from('Bibite.png');
 
 // Set the pivot point to the center of the bibite
 bibite.anchor.set(0.5);
