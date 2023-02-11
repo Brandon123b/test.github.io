@@ -4,7 +4,7 @@ class Food {
         this.radius = 50;
         
         // Create a bibite to draw
-        this.sprite = PIXI.Sprite.from('/Sprites/Apple.png');
+        this.sprite = PIXI.Sprite.from('Sprites/Apple.png');
         
         // Set the pivot point to the center of the bibite
         this.sprite.anchor.set(0.5);

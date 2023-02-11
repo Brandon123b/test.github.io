@@ -22,7 +22,7 @@ class Bibite {
         this.maxSpeed = 5;
 
         // Create a bibite to draw
-        this.sprite = PIXI.Sprite.from('/Sprites/Bibite.png');
+        this.sprite = PIXI.Sprite.from('Sprites/Bibite.png');
         
         // Set the pivot point to the center of the bibite
         this.sprite.anchor.set(0.5);
