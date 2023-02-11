@@ -39,16 +39,28 @@ class Node {
 
     DrawNetwork(graphics, x, y){
 
-        var circleRaduis = 20;
+        var circleRadius = 20;
 
-        // Turn more red as the value increases
-        var red = Math.round(255 * this.value);
+        // Set the border color to blue
+        graphics.lineStyle(1, 0x0000FF);
+        
+        if (this.value < 0) {
+            // Turn more red as the value increases
+            var red = Math.round(255 * -this.value);
 
-        // Set the color of the circle
-        graphics.beginFill("0x" +  red.toString(16).toUpperCase() + "0000");
+            // Set the color of the circle
+            graphics.beginFill("0x" +  red.toString(16).toUpperCase() + "0000");
+        }
+        else {
+            // Turn more green as the value increases
+            var green = Math.round(255 * this.value);
+
+            // Set the color of the circle
+            graphics.beginFill("0x" +  "00" + green.toString(16).toUpperCase() + "00");
+        }
 
         // Draw the circle
-        graphics.drawCircle(x, y, circleRaduis);
+        graphics.drawCircle(x, y, circleRadius);
 
         // End the fill
         graphics.endFill();

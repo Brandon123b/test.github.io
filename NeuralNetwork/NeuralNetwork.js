@@ -2,34 +2,37 @@
  * The neural network class
  * 
  * Inputs:
- *  0: x
- *  1: y
+ * 0: leftEye
+ * 1: middleEye
+ * 2: rightEye
  * 
  * Outputs:
- * 0: turnLeft
- * 1: turnRight
+ *  0: Rotation
+ *  1: Speed
  * 
  */
 
+// The number of nodes in each layer (Bias node is added automatically)
+var nnetworkLayers = [3, 3, 2];
+
 class NeuralNetwork {
 
+    
+
     constructor(){
-
-        // The number of nodes in each layer (Arbitrary)
-        const numberOfNodes = [2, 5, 5, 3];
-
+        
         // The layers in the network
         this.layers = [];
 
         // Create each layer
-        for(let i = 0; i < numberOfNodes.length; i++){
+        for(let i = 0; i < nnetworkLayers.length; i++){
                 
             // If the layer is the last layer, set the number of nodes in the next layer to 0
-            if(i === numberOfNodes.length - 1){
-                this.layers.push(new Layer(numberOfNodes[i], 0));
+            if(i === nnetworkLayers.length - 1){
+                this.layers.push(new Layer(nnetworkLayers[i] + 1, 0));
             }
             else{
-                this.layers.push(new Layer(numberOfNodes[i], numberOfNodes[i + 1]));
+                this.layers.push(new Layer(nnetworkLayers[i] + 1, nnetworkLayers[i + 1] + 1));
             }
         }
     }
@@ -51,50 +54,16 @@ class NeuralNetwork {
     }
 
     /**
-     * Sets the value of the input node at the given index
+     * Draws the neural network
      * 
-     * @param index: The index of the input node
-     * @param value: The value to set the input node to
-     */
-    SetInput(index, value){
-        this.layers[0].SetNodeValue(index, value);
-    }
-
-    SetXPosition(value){
-        this.SetInput(0, value);
-    }
-
-    SetYPosition(value){
-        this.SetInput(1, value);
-    }
-
-    GetLeftOutput(){
-        return this.layers[this.layers.length - 1].GetNodeValue(0);
-    }
-
-    GetRightOutput(){
-        return this.layers[this.layers.length - 1].GetNodeValue(1);
-    }
-
-    Print(){
-        
-        // Print each layer
-        for(let i = 0; i < this.layers.length; i++){
-            var layerString = "Layer " + i + ":" + this.layers[i].ToString();
-
-            console.log(layerString);
-        }
-    }
-
-
+     * @param graphics: The graphics object to draw the network with
+     *  
+      */
     DrawNetwork(graphics){
 
         const boxWidth = 400;
         const boxHeight = 250;
         const xPadding = 50;
-        
-        // Clear the graphics object
-        graphics.clear();
 
         // Set the background color to black
         graphics.beginFill(0x000000);
@@ -120,14 +89,38 @@ class NeuralNetwork {
             // Draw the layer
             points = this.layers[i].DrawNetwork(graphics, points, x);
         }
+    }
 
-        // Print the Left and Right outputs
-        //console.log("Left: " + this.GetLeftOutput() + " Right: " + this.GetRightOutput());
-        // Print Left - Right
-        //console.log("Left - Right: " + (this.GetLeftOutput() - this.GetRightOutput()));
+    //
+    //
+    //  Setters
+    //
+    //
 
+    SetLeftEye(value){
+        this.layers[0].SetNodeValue(0, value);
+    }
 
-        return graphics;
+    SetMiddleEye(value){
+        this.layers[0].SetNodeValue(1, value);
+    }
+
+    SetRightEye(value){
+        this.layers[0].SetNodeValue(2, value);
+    }
+
+    //
+    //
+    //  Getters
+    //
+    //
+
+    GetRotationOutput(){
+        return this.layers[this.layers.length - 1].GetNodeValue(0);
+    }
+
+    GetSpeedOutput(){
+        return this.layers[this.layers.length - 1].GetNodeValue(1);
     }
 }
 

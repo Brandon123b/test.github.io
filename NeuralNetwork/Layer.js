@@ -12,10 +12,13 @@ class Layer {
         this.nodes = [];
         this.numberOfNodesInNextLayer = numberOfNodesInNextLayer;
 
-        // Create each node
+        // Create each node in the layer (Add 1 for the bias node)
         for(let i = 0; i < numberOnNodes; i++){
             this.nodes.push(new Node(numberOfNodesInNextLayer));
         }
+
+        // Set the bias node to 1
+        this.nodes[this.nodes.length - 1].SetValue(1);
         
     }
 
@@ -28,8 +31,8 @@ class Layer {
 
         var retVal = [];
 
-        // For each node in the next layer
-        for(let i = 0; i < this.numberOfNodesInNextLayer; i++){
+        // For each node in the next layer (except the bias node)
+        for(let i = 0; i < this.numberOfNodesInNextLayer - 1; i++){
 
             var sum = 0;
 
@@ -42,8 +45,9 @@ class Layer {
         }
 
         // Apply the activation function to each value
+        // Bounds the values between -1 and 1
         for(let i = 0; i < retVal.length; i++){
-            retVal[i] = 1 / (1 + Math.exp(-retVal[i]));
+            retVal[i] = 1 / (1 + Math.exp(-retVal[i])) * 2 - 1;
         }
 
         return retVal;
@@ -74,18 +78,13 @@ class Layer {
         return this.nodes[index].GetValue();
     }
 
-    ToString(){
-
-        var retVal = "";
-
-        // Print each node
-        for(let i = 0; i < this.nodes.length; i++){
-            retVal += "  " + this.nodes[i].ToString();
-        }
-
-        return retVal;
-    }
-
+    /**
+     * Draws the layer
+     * 
+     * @param graphics: The graphics object to draw the layer with
+     * @param nextLayer: The points of the next layer
+     * @param x: The x position of the layer
+     */
     DrawNetwork(graphics, nextLayer, x){
 
         const boxHeight = 230;
@@ -94,10 +93,10 @@ class Layer {
         var points = [];
 
         // For each node in the layer  
-        for(let i = 0; i < this.nodes.length; i++){
+        for(let i = 0; i < this.nodes.length - 1; i++){
 
             // Calculate the y position of the node centered in the column
-            var y = (boxHeight / (this.nodes.length + 1)) * (i + 1);
+            var y = (boxHeight / (this.nodes.length)) * (i + 1);
 
             // Draw a line to the next layer if it exists (Will be null for the output layer)
             if(nextLayer != null){
