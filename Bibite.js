@@ -12,7 +12,7 @@
 var maxSeeDistance = 500;
 
 // Should the eye rays be drawn?
-var drawEyeRays = true;
+var drawEyeRays = false;
 
 class Bibite {
 

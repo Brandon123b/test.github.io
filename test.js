@@ -27,7 +27,7 @@ function main(){
     gGraphics = new PIXI.Graphics();
 
     // Creates some bibites
-    for (var i = 0; i < 5000; i++)
+    for (var i = 0; i < 100; i++)
         bibites.push(new Bibite());
 
     // Create some food
