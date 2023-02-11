@@ -4,6 +4,7 @@ var bibites = [];
 var food = [];
 var app;
 var gGraphics;
+var fpsCounter;
 
 function main(){
 
@@ -33,8 +34,14 @@ function main(){
     for (var i = 0; i < 10; i++)
         food.push(new Food());
 
-    // Add the graphics to the stage last so it is drawn on top
+    // Add the graphics to the stage
     app.stage.addChild(gGraphics);
+
+    // Create the fps counter
+    fpsCounter = new PIXI.Text("FPS: 0", {fontFamily : 'Arial', fontSize: 20, fill : 0x00FF00, align : 'center'});
+    fpsCounter.x = 10;
+    fpsCounter.y = 8;
+    app.stage.addChild(fpsCounter);
 
     // Start the game loop
     app.ticker.add((delta) => {
@@ -60,6 +67,11 @@ function GameLoop(delta) {
     // Draw the first bibite's network last so it is drawn on top
     if (bibites.length > 0)
         bibites[0].nn.DrawNetwork(gGraphics);
+
+    // Update the fps counter
+    fpsCounter.text = "FPS: " + Math.round(app.ticker.FPS);
+    
+
 }
 
 
