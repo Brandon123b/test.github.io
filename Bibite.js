@@ -17,7 +17,7 @@ var drawEyeRays = false;
 class Bibite {
 
     constructor() {
-        this.nn = new NeuralNetwork();
+        this.nn = new NeuralNetwork(3, 2);
         this.maxSeeDistance = 500;
         this.maxSpeed = 5;
 
@@ -45,18 +45,18 @@ class Bibite {
     Update(delta) {
         
         // Set the neural network inputs from the eye raycasts
-        this.nn.SetLeftEye(this.EyeRaycast(-30));
-        this.nn.SetMiddleEye(this.EyeRaycast(0));
-        this.nn.SetRightEye(this.EyeRaycast(30));
+        this.nn.SetInput(0, this.EyeRaycast(-30));
+        this.nn.SetInput(1, this.EyeRaycast(0));
+        this.nn.SetInput(2, this.EyeRaycast(30));
 
         // Run the neural network
         this.nn.RunNN();
 
         // Update the bibite's position and rotation from the neural network's outputs
-        this.sprite.angle += this.nn.GetRotationOutput() * delta * 10;
+        this.sprite.angle += this.nn.GetOutput(0) * delta * 10;
 
         // Calculate the speed of the bibite
-        var speed = this.nn.GetSpeedOutput() * this.maxSpeed;
+        var speed = this.nn.GetOutput(1) * this.maxSpeed;
 
         // If speed is negative, halve it
         if (speed < 0)

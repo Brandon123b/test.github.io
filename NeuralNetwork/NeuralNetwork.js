@@ -13,28 +13,31 @@
  */
 
 // The number of nodes in each layer (Bias node is added automatically)
-var nnetworkLayers = [3, 3, 2];
+var internalLayers = [3, 3];
 
 class NeuralNetwork {
 
     
 
-    constructor(){
+    constructor(inputCount, outputCount) {
         
         // The layers in the network
         this.layers = [];
 
-        // Create each layer
-        for(let i = 0; i < nnetworkLayers.length; i++){
-                
-            // If the layer is the last layer, set the number of nodes in the next layer to 0
-            if(i === nnetworkLayers.length - 1){
-                this.layers.push(new Layer(nnetworkLayers[i] + 1, 0));
-            }
-            else{
-                this.layers.push(new Layer(nnetworkLayers[i] + 1, nnetworkLayers[i + 1] + 1));
-            }
-        }
+        // Create the input layer (Bias node is added automatically)
+        this.layers.push(new Layer(inputCount + 1, internalLayers[0]));
+
+        // Create each layer in the network (Bias node is added automatically)
+        for(let i = 0; i < internalLayers.length; i++)
+
+            // Last internal layer needs to have the output layer's number of nodes
+            if(i == internalLayers.length - 1)  // If this is the last internal layer
+                this.layers.push(new Layer(internalLayers[i] + 1, outputCount));
+            else                                // If this is not the last internal layer      
+                this.layers.push(new Layer(internalLayers[i] + 1, internalLayers[i + 1]));
+        
+        // Create the output layer (No next layer)
+        this.layers.push(new Layer(outputCount + 1, 0));
     }
 
     /**
@@ -91,36 +94,23 @@ class NeuralNetwork {
         }
     }
 
-    //
-    //
-    //  Setters
-    //
-    //
-
-    SetLeftEye(value){
-        this.layers[0].SetNodeValue(0, value);
+    /**
+     * Sets the value of the given input node
+     * 
+     * @param index: The index of the input node
+     * @param value: The value to set the input node to
+     */
+    SetInput(index, value){
+        this.layers[0].SetNodeValue(index, value);
     }
 
-    SetMiddleEye(value){
-        this.layers[0].SetNodeValue(1, value);
-    }
-
-    SetRightEye(value){
-        this.layers[0].SetNodeValue(2, value);
-    }
-
-    //
-    //
-    //  Getters
-    //
-    //
-
-    GetRotationOutput(){
-        return this.layers[this.layers.length - 1].GetNodeValue(0);
-    }
-
-    GetSpeedOutput(){
-        return this.layers[this.layers.length - 1].GetNodeValue(1);
+    /**
+     * Gets the value of the given output node
+     * 
+     * @param index: The index of the output node
+     */
+    GetOutput(index){
+        return this.layers[this.layers.length - 1].GetNodeValue(index);
     }
 }
 

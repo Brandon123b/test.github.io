@@ -24,6 +24,7 @@ class Layer {
 
     /**
      * Multiplies the value of each node by its weights
+     * Adds the values of each node together and applies the sigmoid function
      * 
      * @returns An array of the values of the next layer
      */
@@ -32,25 +33,35 @@ class Layer {
         var retVal = [];
 
         // For each node in the next layer (except the bias node)
-        for(let i = 0; i < this.numberOfNodesInNextLayer - 1; i++){
+        for(let i = 0; i < this.numberOfNodesInNextLayer; i++){
 
-            var sum = 0;
+            var nodeVal = 0;
 
             // For each node in this layer
             for(let j = 0; j < this.nodes.length; j++){
-                sum += this.nodes[j].GetOutput(i);
+                nodeVal += this.nodes[j].GetOutput(i);
             }
 
-            retVal.push(sum);
-        }
+            // Apply the sigmoid function to the value of the node (Range: -1 to 1)
+            nodeVal = this.Sigmoid(nodeVal);
 
-        // Apply the activation function to each value
-        // Bounds the values between -1 and 1
-        for(let i = 0; i < retVal.length; i++){
-            retVal[i] = 1 / (1 + Math.exp(-retVal[i])) * 2 - 1;
+            // Add the value of the node to the array of values
+            retVal.push(nodeVal);
         }
 
         return retVal;
+    }
+
+    /**
+     * Applies the sigmoid function to the value
+     * The sigmoid function is used to normalize the values of the nodes
+     * The range of the sigmoid function is -1 to 1
+     * 
+     * @param x: The value to apply the sigmoid function to
+     * @returns The value of the sigmoid function
+     */
+    Sigmoid(x) {
+        return 1 / (1 + Math.exp(-x)) * 2 - 1;
     }
 
     /**
@@ -92,7 +103,7 @@ class Layer {
         // Store the points of the nodes in the layer
         var points = [];
 
-        // For each node in the layer  
+        // For each node in the layer (except the bias node)
         for(let i = 0; i < this.nodes.length - 1; i++){
 
             // Calculate the y position of the node centered in the column
@@ -104,18 +115,27 @@ class Layer {
                 // For each node in the next layer
                 for(let j = 0; j < nextLayer.length; j++){
 
-                    // Calculate the thickness of the line based on the weight
-                    var lineThickness = 5 * this.nodes[i].weights[j];
+                    // Calculate the thickness of the line based on the weight (Range: 1 to 5)
+                    var lineThickness = 3 * Math.abs(this.nodes[i].weights[j]) + 1;
 
-                    // Make sure the line is at least 1 pixel thick
-                    if(lineThickness < 1)
-                        lineThickness = 1;
+                    // Differentiate the color of the line based on the value of the node
+                    var value = this.nodes[i].weights[j];
+                    if (value < 0) {
+                        // Turn more red as the value increases
+                        var red = Math.round(255 * -value);
 
-                    // Calculate the color of the line based on the weight
-                    var green = Math.round(255 * this.nodes[i].weights[j]);
+                        // Set the color of the circle
+                        graphics.lineStyle(lineThickness, "0x" + red.toString(16).toUpperCase() + "0000", 1);
+                    }
+                    else {
+                        // Turn more green as the value increases
+                        var green = Math.round(255 * value);
 
-                    // Draw a line from the current node to the next layer
-                    graphics.lineStyle(lineThickness, "0x00" + green + "00", 1);
+                        // Set the color of the circle
+                        graphics.lineStyle(lineThickness, "0x00" + green.toString(16).toUpperCase() + "00", 1);
+                    }
+
+                    // Draw the line
                     graphics.moveTo(x, y);
                     graphics.lineTo(nextLayer[j][0], nextLayer[j][1]);
                 }

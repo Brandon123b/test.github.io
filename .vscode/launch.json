@@ -15,9 +15,8 @@
                 "${workspaceFolder}/**",
                 "!**/node_modules/**"
             ]
-
-            
         }
         
     ]
+    
 }

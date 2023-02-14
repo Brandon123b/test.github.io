@@ -9,9 +9,9 @@ class Node {
         this.value = 0;
         this.weights = [];
 
-        // Set each weight to a random number
+        // Set each weight to a random number (Range: -1 to 1)
         for(let i = 0; i < numberOfWeights; i++){
-            this.weights.push(Math.random());
+            this.weights.push(Math.random() * 2 - 1);
         }
     }
 
@@ -44,6 +44,7 @@ class Node {
         // Set the border color to blue
         graphics.lineStyle(1, 0x0000FF);
         
+        // Differentiate the color of the circle based on the value of the node
         if (this.value < 0) {
             // Turn more red as the value increases
             var red = Math.round(255 * -this.value);
