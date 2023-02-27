@@ -23,6 +23,7 @@ function Raycast(raycastResult, x, y, dirX, dirY, maxLength, drawRay = false) {
         }
     }
 
+    
     if (drawRay) {
         // Draw the ray
         gGraphics.lineStyle(4, "0xFF0000", 1);
@@ -43,13 +44,6 @@ function Raycast(raycastResult, x, y, dirX, dirY, maxLength, drawRay = false) {
 // Returns true if the ray hit a circle or false if it did not
 // raycastResult is the result of the raycast
 function RaycastCircle(raycastResult, x, y, dirX, dirY, circle, maxLength) {
-
-    // If direction is not a unit vector, normalize it (may remove to ensure efficiency)
-    var dirMag = Math.sqrt(dirX * dirX + dirY * dirY);
-    if (dirMag != 1) {
-        dirX /= dirMag;
-        dirY /= dirMag;
-    }
 
     // Store the radius of the circle
     var r = circle.GetRadius();
@@ -85,7 +79,7 @@ function RaycastCircle(raycastResult, x, y, dirX, dirY, circle, maxLength) {
     
     // Find the distance from the bSq to the intercection of the ray and the circle
     var f = Math.sqrt(rSq - bSq);
-    
+
     // Calculate the distance from the ray origin to the closest point on the ray to the circle
     var t = a - f;
 

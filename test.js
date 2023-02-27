@@ -1,4 +1,6 @@
 
+var run = false;
+
 // Some global variables
 var bibites = [];
 var food = [];
@@ -27,11 +29,11 @@ function main(){
     gGraphics = new PIXI.Graphics();
 
     // Creates some bibites
-    for (var i = 0; i < 100; i++)
+    for (var i = 0; i < 2000; i++)
         bibites.push(new Bibite());
 
     // Create some food
-    for (var i = 0; i < 10; i++)
+    for (var i = 0; i < 1000; i++)
         food.push(new Food());
 
     // Add the graphics to the stage
@@ -53,6 +55,8 @@ function main(){
 // Game loop. Called every frame.
 function GameLoop(delta) {
 
+    var now = performance.now();
+
     // Clear the graphics
     gGraphics.clear();
 
@@ -60,6 +64,7 @@ function GameLoop(delta) {
     for (var i = 0; i < bibites.length; i++)
         bibites[i].Update(delta);
     
+
     // Draw the food
     for (var i = 0; i < food.length; i++)
         food[i].Draw(gGraphics);
@@ -70,9 +75,19 @@ function GameLoop(delta) {
 
     // Update the fps counter
     fpsCounter.text = "FPS: " + Math.round(app.ticker.FPS);
-    
 
+    var end = performance.now();
+    console.log("Time: " + (end - now) + "ms");
 }
 
+if (run)
+    main();
+else{
+    console.log("Run is false");
 
-main();
+    width  = 1200;
+    height = 900;
+
+    app = new PIXI.Application({width, height});
+    document.body.appendChild(app.view);
+}

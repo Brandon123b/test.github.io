@@ -15,11 +15,14 @@ var maxSeeDistance = 500;
 var drawEyeRays = false;
 
 class Bibite {
-
+    
     constructor() {
-        this.nn = new NeuralNetwork(3, 2);
+        this.nn = new NeuralNetwork2(3, 3);
         this.maxSeeDistance = 500;
         this.maxSpeed = 5;
+        
+        // The age in seconds
+        this.age = 0;
 
         // Create a bibite to draw
         this.sprite = PIXI.Sprite.from('Sprites/Bibite.png');
@@ -42,7 +45,15 @@ class Bibite {
         this.sprite.angle = Math.random() * 360;
     }
 
+    /*
+    * Update the bibite
+    * 
+    * @param {number} delta - The time since the last update in seconds
+    */
     Update(delta) {
+
+        // Increase the age of the bibite
+        this.age += delta;
         
         // Set the neural network inputs from the eye raycasts
         this.nn.SetInput(0, this.EyeRaycast(-30));
@@ -52,6 +63,7 @@ class Bibite {
         // Run the neural network
         this.nn.RunNN();
 
+        
         // Update the bibite's position and rotation from the neural network's outputs
         this.sprite.angle += this.nn.GetOutput(0) * delta * 10;
 
@@ -68,7 +80,7 @@ class Bibite {
     }
 
     // Returns the ratio of the distance to the closest food to the max distance
-    // Returns 0 if no food is found
+    // Returns -1 if no food is found
     EyeRaycast(angleFromMiddle) {
         
         // Create a raycast result object
