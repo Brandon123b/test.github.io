@@ -226,13 +226,25 @@ class NeatNN {
     // Removes a random connection from the network
     MutateRemoveConnection() {
 
-        // If there are no connections, return
-        if (this.connections.length === 0)
-            return;
+        // Add all eligible connections to a list
+        var eligibleConnections = [];
 
+        for(let i = 0; i < this.connections.length; i++) {
+
+            // If the from and to nodes have more than one connection, add the connection to the list of eligible connections
+            // Or if the connection is between an input or output node
+            if (this.connections[i].from.nodeType !== NodeType.Hidden && this.connections[i].to.nodeType !== NodeType.Hidden ||
+                this.connections[i].from.outgoingConnections.length > 1 && this.connections[i].to.incomingConnections.length > 1)
+                eligibleConnections.push(this.connections[i]);
+        }
+
+        // If there are no eligible connections, return
+        if (eligibleConnections.length === 0)
+            return;
+        
         // Pick a random connection
-        var randomIndex = Math.floor(Math.random() * this.connections.length);
-        var connection = this.connections[randomIndex];
+        var randomIndex = Math.floor(Math.random() * eligibleConnections.length);
+        var connection = eligibleConnections[randomIndex];
 
         // Disconnect the connection
         this.disconnect(connection);
