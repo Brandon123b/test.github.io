@@ -110,8 +110,8 @@ class NeatNN {
         var mutateBiasChance = 0.3;
         var mutateAddConnectionChance = 0.06;
         var mutateRemoveConnectionChance = 0.05;
-        var mutateAddNodeChance = 0.2;
-        var mutateRemoveConnectionChance = -1.00;
+        var mutateAddNodeChance = 0.05;
+        var mutateRemoveConnectionChance = 0.04;
 
         // Mutate the weight of a random connection
         if (Math.random() < mutateWeightChance){
