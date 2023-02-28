@@ -17,7 +17,7 @@ var drawEyeRays = false;
 class Bibite {
     
     constructor() {
-        this.nn = new NeuralNetwork2(3, 3);
+        this.nn = new NeatNN(3, 3);
         this.maxSeeDistance = 500;
         this.maxSpeed = 5;
         
@@ -55,6 +55,8 @@ class Bibite {
         // Increase the age of the bibite
         this.age += delta;
         
+        this.nn.Mutate();
+
         // Set the neural network inputs from the eye raycasts
         this.nn.SetInput(0, this.EyeRaycast(-30));
         this.nn.SetInput(1, this.EyeRaycast(0));

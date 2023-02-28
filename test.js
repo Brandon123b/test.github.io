@@ -1,5 +1,5 @@
 
-var run = false;
+var run = true;
 
 // Some global variables
 var bibites = [];
@@ -29,11 +29,11 @@ function main(){
     gGraphics = new PIXI.Graphics();
 
     // Creates some bibites
-    for (var i = 0; i < 2000; i++)
+    for (var i = 0; i < 1000; i++)
         bibites.push(new Bibite());
 
     // Create some food
-    for (var i = 0; i < 1000; i++)
+    for (var i = 0; i < 10; i++)
         food.push(new Food());
 
     // Add the graphics to the stage
@@ -69,15 +69,16 @@ function GameLoop(delta) {
     for (var i = 0; i < food.length; i++)
         food[i].Draw(gGraphics);
 
+
     // Draw the first bibite's network last so it is drawn on top
     if (bibites.length > 0)
-        bibites[0].nn.DrawNetwork(gGraphics);
+        bibites[0].nn.DrawNN(gGraphics);
 
     // Update the fps counter
     fpsCounter.text = "FPS: " + Math.round(app.ticker.FPS);
 
     var end = performance.now();
-    console.log("Time: " + (end - now) + "ms");
+    //console.log("Time: " + (end - now) + "ms");
 }
 
 if (run)

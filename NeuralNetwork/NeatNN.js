@@ -1,7 +1,24 @@
+/* NeatNN.js
+* A neural network that uses the NEAT algorithm
+*
+* Public functions:
+*   SetInput(index, newValue) - Sets the input of the neural network
+*   RunNN() - Runs the neural network
+*   GetOutput(index) - Gets the output of the neural network
+*   DrawNN(graphics, xSize, ySize, circleSize) - Draws the neural network
+*   Mutate() - Mutates the neural network
+*   GetPenalty() - Gets the penalty of the neural network
+*   Clone() - Clones the neural network
+*
+* TODO:
+*   Serialize() - Serializes the neural network
+*   Deserialize() - Deserializes the neural network
+*/
+
 
 class NeatNN {
 
-    constructor(_inputCount, _outputCount) {
+    constructor(_inputCount, _outputCount, isCloning = false) {
         this.inputCount = _inputCount;
         this.outputCount = _outputCount;
 
@@ -10,6 +27,12 @@ class NeatNN {
 
         this.inputs = [];
         this.outputs = [];
+
+        this.penalty = 0;       // The penalty of the network (increases for larger networks)
+
+        // If the network is not being cloned, create the network
+        if (isCloning)
+            return;
 
         // Create the input nodes
         for(let i = 0; i < this.inputCount; i++){
@@ -29,6 +52,37 @@ class NeatNN {
                     this.connect(this.nodes[i], this.nodes[this.nodes.length - this.outputCount + j]);
             }
         }
+
+        // Calculate the penalty of the network
+        this.CalculatePenalty();
+    }
+
+    // Run the neural network
+    RunNN() {
+
+        // For each node, calculate the activation
+        for(let i = 0; i < this.nodes.length; i++) {
+                
+            // Get the node
+            var node = this.nodes[i];
+
+            // If the node is an input node, set the activation to the input value and continue
+            if(node.nodeType === NodeType.Input) {
+                node.CalculateActivation(this.inputs[i]);
+                continue;
+            }
+            
+            // If not an input node, Calculate the activation of the node (without an input)
+            node.CalculateActivation();
+        }
+
+        // Get the offset of the first output node
+        var offset = this.nodes.length - this.outputCount;
+
+        // Set the output values
+        for(let i = 0; i < this.outputCount; i++) {
+            this.outputs[i] = this.nodes[offset + i].activation;
+        }
     }
 
     /* Connect two nodes
@@ -40,6 +94,10 @@ class NeatNN {
         
         // If the nodes are already connected, throw an error
         if(from.IsConnectedTo(to)){
+
+            this.PrintConnectionIndexes();
+
+            console.log(this.nodes.indexOf(from) + " -> " + this.nodes.indexOf(to) + " is already connected");
             throw new Error("Nodes are already connected");
         }
 
@@ -72,34 +130,10 @@ class NeatNN {
         connection.to.RemoveIncomingConnection(connection);
     }
 
-    // Run the neural network
-    RunNN() {
-
-        // For each node, calculate the activation
-        for(let i = 0; i < this.nodes.length; i++) {
-                
-            // Get the node
-            var node = this.nodes[i];
-
-            // If the node is an input node, set the activation to the input value and continue
-            if(node.nodeType === NodeType.Input) {
-                node.CalculateActivation(this.inputs[i]);
-                continue;
-            }
-            
-            // If not an input node, Calculate the activation of the node (without an input)
-            node.CalculateActivation();
-        }
-
-        // Get the offset of the first output node
-        var offset = this.nodes.length - this.outputCount;
-
-        // Set the output values
-        for(let i = 0; i < this.outputCount; i++) {
-            this.outputs[i] = this.nodes[offset + i].activation;
-        }
+    // Calculate the penalty of the network
+    CalculatePenalty() {
+        this.penalty = this.connections.length * 0.3 + this.nodes.length;
     }
-
 
     // ---------------------------- Mutate Functions ------------------------------------
 
@@ -150,6 +184,9 @@ class NeatNN {
 
             this.MutateRemoveNode();
         }
+
+        // Calculate the new penalty of the network
+        this.CalculatePenalty();
     }
 
     // Modify the weight of a random connection
@@ -320,9 +357,16 @@ class NeatNN {
 
     // ---------------------------- Draw Functions --------------------------------------
 
-
-    // Draw the neural network
-    DrawNN(graphics, xSize, ySize) {
+    /** Draws the neural network to the canvas
+     * Draws the nn to the top left of the canvas using the given graphics object
+     * The network is drawn with the input nodes on the left, the output nodes on the right, and the hidden nodes in the middle
+     * This function is not optimized and should not be used too often
+     * @param {PIXI.Graphics} graphics The graphics object to draw to
+     * @param {number} xSize The width of the canvas
+     * @param {number} ySize The height of the canvas
+     * @param {number} nodeSize The size of the nodes
+     */
+    DrawNN(graphics, xSize = 500, ySize = 300, nodeSize = 20) {
 
         var xPadding = 35;
         var yPadding = 20;
@@ -379,7 +423,7 @@ class NeatNN {
 
         // Draw the nodes
         for(let i = 0; i < nodeLocations.length; i++) {
-            this.DrawNode(graphics, this.nodes[i], nodeLocations[i]);
+            this.DrawNode(graphics, this.nodes[i], nodeLocations[i], nodeSize);
         }
 
     }
@@ -388,11 +432,9 @@ class NeatNN {
     * graphics: The graphics object to draw to
     * node: The node to draw
     * loc: The location to draw the node
+    * nodeSize: The size of circle to draw for the node
     */
-    DrawNode(graphics, node, loc) {
-
-        // The radius? of the node
-        var size = 25;
+    DrawNode(graphics, node, loc, nodeSize) {
 
         // The intensity of the color
         var intensity = Math.min(255, Math.abs(node.activation * 255));
@@ -412,7 +454,7 @@ class NeatNN {
         graphics.lineStyle(1 , 0x0000FF);
 
         // Draw the circle
-        graphics.drawCircle(loc.GetX(), loc.GetY(), size);
+        graphics.drawCircle(loc.GetX(), loc.GetY(), nodeSize);
     }
 
     /* Draws a connection
@@ -423,7 +465,7 @@ class NeatNN {
     DrawConnection(graphics, connection, nodeLocations) {
             
         // The width of the line
-        var lineWidth = 5;
+        var lineWidth = 3;
 
         // The intensity of the color
         var intensity = Math.min(255, Math.abs(connection.weight * 255));
@@ -495,7 +537,6 @@ class NeatNN {
 
     // ---------------------------- Print Functions ------------------------------------
 
-    
     PrintNodes() {
         console.log("Printing Nodes: ");
 
@@ -520,11 +561,8 @@ class NeatNN {
         }
     }
 
-
     // ---------------------------- Getters and Setters --------------------------------
-
-
-
+    
     // Set the input value of the node
     SetInput(index, value) {
 
@@ -546,9 +584,57 @@ class NeatNN {
         // Get the output
         return this.outputs[index];
     }
+
+    // Get the penalty
+    GetPenalty() {
+        return this.penalty;
+    }
+
+    // ---------------------------- Other Functions ------------------------------------
+
+    /** Returns a clone of the neural network
+     * 
+     * @returns a clone of the neural network
+     */
+    Clone() {
+
+        // Create a new neural network
+        var newNN = new NeatNN(this.inputCount, this.outputCount, true);
+
+        // For each node in the old neural network
+        for (let i = 0; i < this.nodes.length; i++) {
+
+            // Get the node
+            var node = this.nodes[i];
+
+            // Create a new node and set the type and bias
+            var newNode = new Node(node.nodeType);
+            newNode.bias = node.bias;
+
+            // Add the new node to the new neural network
+            newNN.nodes.push(newNode);
+        }
+
+        // For each connection in the old neural network
+        for (let i = 0; i < this.connections.length; i++) {
+
+            // Get the connection
+            var connection = this.connections[i];
+
+            var fromIndex = this.nodes.indexOf(connection.from);
+            var toIndex = this.nodes.indexOf(connection.to);
+            
+            // Connect the nodes in the new neural network
+            newNN.connect(newNN.nodes[fromIndex], newNN.nodes[toIndex], connection.weight)
+        }
+
+        return newNN;
+    }
 }
 
-
+/** Represents a connection between two nodes in the neural network
+ * 
+ */
 class Connection {
 
     /** Create a connection
@@ -561,7 +647,7 @@ class Connection {
         this.to = _to;
 
         if (_weight === undefined)
-            this.weight = 1; //Math.random() * 2 - 1;
+            this.weight = Math.random() * 2 - 1;
         else
             this.weight = _weight;
     }

@@ -96,6 +96,9 @@ function TestRaycastSpeed(){
 
 }
 
+/* Tests the add and remove node and connection mutations
+* Adds and removes nodes and connections every second
+*/
 function TestAddRemoveNodeMutations(){
 
     var nn = new NeatNN(4, 3);
@@ -156,6 +159,9 @@ function TestAddRemoveNodeMutations(){
 
 }
 
+/* Tests the mutation function
+* Mutates the neural network every second
+*/
 function TestNetworkMutate(){
 
     var nn = new NeatNN(4, 3);
@@ -167,7 +173,7 @@ function TestNetworkMutate(){
 
     // Run Mutate every second
     window.setInterval(function(){
-        
+
         nn.Mutate();
 
         nn.SetInput(0, Math.random() * 2 - 1);
@@ -220,8 +226,66 @@ function TestNeatNNSpeed(){
 
 }
 
+/**  Tests the clone function
+* Creates a mutated neural network and clones it, then tests the cloned neural network
+* to see if they produce the same output
+* @param {boolean} printNN - If true, prints the neural network
+*/
+function TestNNClone(printNN = false){
+
+    console.log("Testing NN clone...");
+
+    var nn = new NeatNN(3, 3);
+
+    // Mutate the neural network
+    for (var i = 0; i < 100; i++)
+        nn.Mutate();
+
+    // Print the neural network if printNN is true
+    if (printNN){
+        console.log("Original NN");
+        nn.PrintNodes();
+        nn.PrintConnectionIndexes();
+    }
+
+    var clone = nn.Clone();
+
+    // Print the neural network if printNN is true
+    if (printNN){
+        console.log("Clone NN");
+        clone.PrintNodes();
+        clone.PrintConnectionIndexes();
+    }
+
+    // Give both neural networks random inputs
+    var input1 = Math.random() * 2 - 1;
+    var input2 = Math.random() * 2 - 1;
+    var input3 = Math.random() * 2 - 1;
+
+    nn.SetInput(0, input1);
+    nn.SetInput(1, input2);
+    nn.SetInput(2, input3);
+    clone.SetInput(0, input1);
+    clone.SetInput(1, input2);
+    clone.SetInput(2, input3);
+
+    // Run the neural networks
+    nn.RunNN();
+    clone.RunNN();
+
+    if (nn.GetOutput(0) != clone.GetOutput(0) || 
+        nn.GetOutput(1) != clone.GetOutput(1) || 
+        nn.GetOutput(2) != clone.GetOutput(2))
+        console.log("ERROR: The neural networks are not the same");
+    else
+        console.log("The neural networks produced the same outputs. Clone test passed");
+
+}
+
 // Test the speed of the neural network
 //TestNNSpeed();
 //TestNeatNNSpeed();
 
-TestNetworkMutate();
+//TestNetworkMutate();
+
+//TestNNClone();
